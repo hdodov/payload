@@ -10,4 +10,9 @@ export const PostsCollection: CollectionConfig = {
       type: 'text',
     },
   ],
+  versions: {
+    drafts: {
+      autosave: true,
+    },
+  },
 };
