@@ -17,6 +17,15 @@ export interface Config {
 export interface Post {
   id: string;
   text?: string;
+  slug?: string;
+  parent?: string | Post;
+  breadcrumbs?: {
+    doc?: string | Post;
+    url?: string;
+    label?: string;
+    id?: string;
+  }[];
+  _status?: 'draft' | 'published';
   createdAt: string;
   updatedAt: string;
 }

@@ -9,5 +9,17 @@ export const PostsCollection: CollectionConfig = {
       name: 'text',
       type: 'text',
     },
+    {
+      name: 'slug',
+      type: 'text',
+    },
   ],
+  access: {
+    read: () => true,
+  },
+  // versions: {
+  //   drafts: {
+  //     autosave: true,
+  //   },
+  // },
 };

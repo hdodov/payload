@@ -1433,6 +1433,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@payloadcms/plugin-nested-docs@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "@payloadcms/plugin-nested-docs@npm:1.0.4"
+  peerDependencies:
+    payload: ^0.18.5
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 559f305d7b0e8029fe75da45191c7a493a4e92c9471294a48a4c083652a90d02da46033891da2458a3b92c64c5bff12dfb5601b5a0cd520bcb2358fbfc0f37e9
+  languageName: node
+  linkType: hard
+
 "@playwright/test@npm:^1.29.2":
   version: 1.32.2
   resolution: "@playwright/test@npm:1.32.2"
@@ -11663,6 +11673,7 @@ __metadata:
     "@faceless-ui/scroll-info": ^1.3.0
     "@faceless-ui/window-info": ^2.1.1
     "@monaco-editor/react": ^4.4.6
+    "@payloadcms/plugin-nested-docs": ^1.0.4
     "@playwright/test": ^1.29.2
     "@release-it/conventional-changelog": ^5.1.1
     "@swc/core": ^1.3.26
