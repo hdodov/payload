@@ -4,13 +4,12 @@ import {
   components as SelectComponents,
 } from 'react-select';
 import { useDraggableSortable } from '../../DraggableSortable/useDraggableSortable';
-import { Option as OptionType } from '../types';
+import type { Option } from '../types';
 
 import './index.scss';
 
 const baseClass = 'multi-value';
-
-export const MultiValue: React.FC<MultiValueProps<OptionType>> = (props) => {
+export const MultiValue: React.FC<MultiValueProps<Option>> = (props) => {
   const {
     className,
     isDisabled,
@@ -19,27 +18,28 @@ export const MultiValue: React.FC<MultiValueProps<OptionType>> = (props) => {
       value,
     },
     selectProps: {
-      selectProps,
-      selectProps: {
+      customProps: {
         disableMouseDown,
-      },
-    },
+      } = {},
+    } = {},
   } = props;
-
-  const classes = [
-    baseClass,
-    className,
-    !isDisabled && 'draggable',
-  ].filter(Boolean).join(' ');
 
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
+    isDragging,
   } = useDraggableSortable({
     id: value.toString(),
   });
+
+  const classes = [
+    baseClass,
+    className,
+    !isDisabled && 'draggable',
+    isDragging && `${baseClass}--is-dragging`,
+  ].filter(Boolean).join(' ');
 
   return (
     <SelectComponents.MultiValue
@@ -47,6 +47,8 @@ export const MultiValue: React.FC<MultiValueProps<OptionType>> = (props) => {
       className={classes}
       innerProps={{
         ...innerProps,
+        ...attributes,
+        ...listeners,
         ref: setNodeRef,
         onMouseDown: (e) => {
           if (!disableMouseDown) {
@@ -57,14 +59,6 @@ export const MultiValue: React.FC<MultiValueProps<OptionType>> = (props) => {
         },
         style: {
           transform,
-        },
-      }}
-      selectProps={{
-        ...selectProps,
-        // pass the draggable props through to the label so it alone acts as the draggable handle
-        draggableProps: {
-          ...attributes,
-          ...listeners,
         },
       }}
     />

@@ -300,6 +300,9 @@
         "notFound": {
           "type": "string"
         },
+        "previewing": {
+          "type": "string"
+        },
         "problemUploadingFile": {
           "type": "string"
         },
@@ -357,6 +360,7 @@
         "notAllowedToAccessPage",
         "notAllowedToPerformAction",
         "notFound",
+        "previewing",
         "problemUploadingFile",
         "tokenInvalidOrExpired",
         "unPublishingDocument",
@@ -859,6 +863,9 @@
         "users": {
           "type": "string"
         },
+        "value": {
+          "type": "string"
+        },
         "welcome": {
           "type": "string"
         }
@@ -972,37 +979,37 @@
         "equals": {
           "type": "string"
         },
-        "isNotEqualTo":{
+        "isNotEqualTo": {
           "type": "string"
         },
         "isIn": {
           "type": "string"
         },
-        "isNotIn":{
+        "isNotIn": {
           "type": "string"
         },
         "exists": {
           "type": "string"
         },
-        "isGreaterThan":{
+        "isGreaterThan": {
           "type": "string"
         },
         "isLessThan": {
           "type": "string"
         },
-        "isLessThanOrEqualTo":{
+        "isLessThanOrEqualTo": {
           "type": "string"
         },
         "isGreaterThanOrEqualTo": {
           "type": "string"
         },
-        "near":{
+        "near": {
           "type": "string"
         },
         "isLike": {
           "type": "string"
         },
-        "contains":{
+        "contains": {
           "type": "string"
         }
       },

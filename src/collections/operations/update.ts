@@ -7,7 +7,6 @@ import sanitizeInternalFields from '../../utilities/sanitizeInternalFields';
 import executeAccess from '../../auth/executeAccess';
 import { APIError, ValidationError } from '../../errors';
 import { PayloadRequest } from '../../express/types';
-import { hasWhereAccessResult } from '../../auth/types';
 import { saveVersion } from '../../versions/saveVersion';
 import { uploadFiles } from '../../uploads/uploadFiles';
 import { beforeChange } from '../../fields/hooks/beforeChange';
@@ -84,37 +83,18 @@ async function update<TSlug extends keyof GeneratedTypes['collections']>(
   // Access
   // /////////////////////////////////////
 
-  const queryToBuild: { where?: Where } = {
-    where: {
-      and: [],
-    },
-  };
-
-  if (where) {
-    queryToBuild.where = {
-      and: [],
-      ...where,
-    };
-
-    if (Array.isArray(where.AND)) {
-      queryToBuild.where.and = [
-        ...queryToBuild.where.and,
-        ...where.AND,
-      ];
-    }
-  }
-
   let accessResult: AccessResult;
 
   if (!overrideAccess) {
     accessResult = await executeAccess({ req }, collectionConfig.access.update);
-
-    if (hasWhereAccessResult(accessResult)) {
-      queryToBuild.where.and.push(accessResult);
-    }
   }
 
-  const query = await Model.buildQuery(queryToBuild, locale);
+  const query = await Model.buildQuery({
+    where,
+    access: accessResult,
+    req,
+    overrideAccess,
+  });
 
   // /////////////////////////////////////
   // Retrieve documents
@@ -125,7 +105,8 @@ async function update<TSlug extends keyof GeneratedTypes['collections']>(
     docs = await queryDrafts<GeneratedTypes['collections'][TSlug]>({
       accessResult,
       collection,
-      locale,
+      req,
+      overrideAccess,
       payload,
       where: query,
     });

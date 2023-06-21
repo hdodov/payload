@@ -7,7 +7,6 @@ import { APIError } from '../../errors';
 import executeAccess from '../../auth/executeAccess';
 import { BeforeOperationHook, Collection } from '../config/types';
 import { Where } from '../../types';
-import { hasWhereAccessResult } from '../../auth/types';
 import { afterRead } from '../../fields/hooks/afterRead';
 import { deleteCollectionVersions } from '../../versions/deleteCollectionVersions';
 import { deleteAssociatedFiles } from '../../uploads/deleteAssociatedFiles';
@@ -55,7 +54,6 @@ async function deleteOperation<TSlug extends keyof GeneratedTypes['collections']
     req,
     req: {
       t,
-      locale,
       payload,
       payload: {
         config,
@@ -74,37 +72,18 @@ async function deleteOperation<TSlug extends keyof GeneratedTypes['collections']
   // Access
   // /////////////////////////////////////
 
-  const queryToBuild: { where?: Where } = {
-    where: {
-      and: [],
-    },
-  };
-
-  if (where) {
-    queryToBuild.where = {
-      and: [],
-      ...where,
-    };
-
-    if (Array.isArray(where.AND)) {
-      queryToBuild.where.and = [
-        ...queryToBuild.where.and,
-        ...where.AND,
-      ];
-    }
-  }
-
   let accessResult: AccessResult;
 
   if (!overrideAccess) {
     accessResult = await executeAccess({ req }, collectionConfig.access.delete);
-
-    if (hasWhereAccessResult(accessResult)) {
-      queryToBuild.where.and.push(accessResult);
-    }
   }
 
-  const query = await Model.buildQuery(queryToBuild, locale);
+  const query = await Model.buildQuery({
+    where,
+    access: accessResult,
+    req,
+    overrideAccess,
+  });
 
   // /////////////////////////////////////
   // Retrieve documents
