@@ -1,23 +1,25 @@
 import type { CollectionConfig } from '../../../../src/collections/config/types';
-import { mediaSlug } from '../Media';
 
 export const postsSlug = 'posts';
 
 export const PostsCollection: CollectionConfig = {
   slug: postsSlug,
+  versions: {
+    maxPerDoc: 0,
+    drafts: {
+      autosave: true,
+    },
+  },
   fields: [
     {
-      name: 'text',
+      name: 'content',
       type: 'text',
+      required: true,
+      localized: true,
     },
     {
-      name: 'associatedMedia',
-      type: 'upload',
-      relationTo: mediaSlug,
-      access: {
-        create: () => true,
-        update: () => false,
-      },
+      name: 'slug',
+      type: 'text',
     },
   ],
 };
