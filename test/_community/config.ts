@@ -18,6 +18,10 @@ export default buildConfig({
   graphQL: {
     schemaOutputFile: './test/_community/schema.graphql',
   },
+  localization: {
+    locales: ['en', 'es'],
+    defaultLocale: 'en',
+  },
 
   onInit: async (payload) => {
     await payload.create({
