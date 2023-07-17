@@ -5,6 +5,14 @@ export const postsSlug = 'posts';
 
 export const PostsCollection: CollectionConfig = {
   slug: postsSlug,
+  admin: {
+    preview: () => 'https://example.com',
+  },
+  versions: {
+    drafts: {
+      autosave: true,
+    },
+  },
   fields: [
     {
       name: 'text',
