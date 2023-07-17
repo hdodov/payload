@@ -14,10 +14,6 @@ export const PostsCollection: CollectionConfig = {
       name: 'associatedMedia',
       type: 'upload',
       relationTo: mediaSlug,
-      access: {
-        create: () => true,
-        update: () => false,
-      },
     },
   ],
 };
