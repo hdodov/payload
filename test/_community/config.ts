@@ -66,10 +66,10 @@ export default buildConfig({
     (async () => {
       const gql = String.raw;
       const query = gql`{
-        Posts { docs { content(depth: 1) } }
+        Posts { docs { content(depth: 99) } }
       }`;
 
-      const res = await fetch('http://localhost:3000/api/graphql', {
+      const res = await fetch('http://localhost:3000/api/graphql?testHook=1', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

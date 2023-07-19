@@ -1,5 +1,4 @@
 import type { CollectionConfig } from '../../../../src/collections/config/types';
-import { mediaSlug } from '../Media';
 
 export const postsSlug = 'posts';
 
@@ -10,12 +9,29 @@ export const PostsCollection: CollectionConfig = {
   },
   fields: [
     {
-      name: 'text',
-      type: 'text',
-    },
-    {
       name: 'content',
       type: 'richText',
     },
   ],
+  hooks: {
+    afterRead: [
+      function ({ req, doc }) {
+        if (!req.query?.testHook) {
+          return doc;
+        }
+
+        const mediaUrl = doc.content[0].value.url;
+        if (!mediaUrl) {
+          console.log('Media URL missing:', JSON.stringify(doc, undefined, 2));
+        }
+        return {
+          content: [
+            {
+              mediaUrl,
+            },
+          ],
+        };
+      },
+    ],
+  },
 };
