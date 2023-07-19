@@ -50,6 +50,7 @@ export default (config: SanitizedConfig): Configuration => ({
       crypto: false,
       https: false,
       http: false,
+      fs: false,
     },
     modules: ['node_modules', path.resolve(__dirname, '../../node_modules')],
     alias: {
