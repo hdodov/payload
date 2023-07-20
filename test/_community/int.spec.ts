@@ -8,6 +8,8 @@ require('isomorphic-fetch');
 
 let apiUrl;
 let jwt;
+let postId;
+let parentCategoryId;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -32,6 +34,32 @@ describe('_Community Tests', () => {
 
     const data = await response.json();
     jwt = data.token;
+
+    const childCategory = await payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Child Category',
+      },
+    });
+
+    const parentCategory = await payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Parent Category',
+        subcategories: [childCategory.id],
+      },
+    });
+
+    const post = await payload.create({
+      collection: postsSlug,
+      data: {
+        text: 'example post',
+        category: childCategory.id,
+      },
+    });
+
+    postId = post.id;
+    parentCategoryId = parentCategory.id;
   });
 
   afterAll(async () => {
@@ -45,29 +73,40 @@ describe('_Community Tests', () => {
   // use the tests below as a guide
   // --__--__--__--__--__--__--__--__--__
 
-  it('local API example', async () => {
-    const newPost = await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'LOCAL API EXAMPLE',
+  it('populates category in REST query', async () => {
+    const post = await fetch(`${apiUrl}/${postsSlug}/${postId}`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        Authorization: `JWT ${jwt}`,
       },
-    });
+    }).then((res) => res.json());
 
-    expect(newPost.text).toEqual('LOCAL API EXAMPLE');
+    console.log('REST response JSON:', JSON.stringify(post, undefined, 2)); // eslint-disable-line
+    expect(post.parentCategory?.id).toEqual(parentCategoryId);
   });
 
-  it('rest API example', async () => {
-    const newPost = await fetch(`${apiUrl}/${postsSlug}`, {
+  it('populates category in GraphQL query', async () => {
+    const gql = String.raw;
+    const query = gql`{
+      Post(id: "${postId}") {
+        parentCategory {
+          id
+          title
+        }
+      }
+    }`;
+
+    const result = await fetch(`${apiUrl}/graphql`, {
       method: 'POST',
       headers: {
         ...headers,
         Authorization: `JWT ${jwt}`,
       },
-      body: JSON.stringify({
-        text: 'REST API EXAMPLE',
-      }),
+      body: JSON.stringify({ query }),
     }).then((res) => res.json());
 
-    expect(newPost.doc.text).toEqual('REST API EXAMPLE');
+    console.log('GraphQL response JSON:', JSON.stringify(result, undefined, 2)); // eslint-disable-line
+    expect(result.data.Post.parentCategory?.id).toEqual(parentCategoryId);
   });
 });
