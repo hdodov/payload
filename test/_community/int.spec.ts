@@ -1,3 +1,4 @@
+import { readFile } from 'fs/promises';
 import mongoose from 'mongoose';
 import payload from '../../src';
 import { initPayloadTest } from '../helpers/configHelpers';
@@ -13,10 +14,7 @@ const headers = {
   'Content-Type': 'application/json',
 };
 const { email, password } = devUser;
-describe('_Community Tests', () => {
-  // --__--__--__--__--__--__--__--__--__
-  // Boilerplate test setup/teardown
-  // --__--__--__--__--__--__--__--__--__
+describe('populating relationships in richtext fields', () => {
   beforeAll(async () => {
     const { serverURL } = await initPayloadTest({ __dirname, init: { local: false } });
     apiUrl = `${serverURL}/api`;
@@ -32,6 +30,38 @@ describe('_Community Tests', () => {
 
     const data = await response.json();
     jwt = data.token;
+
+    const buffer = await readFile(`${__dirname}/test.png`);
+    const media = await payload.create({
+      collection: 'media',
+      file: {
+        data: buffer,
+        name: 'test.png',
+        mimetype: 'image/png',
+        size: buffer.byteLength,
+      },
+      data: {},
+    });
+
+    await payload.create({
+      collection: postsSlug,
+      data: {
+        content: [
+          {
+            children: [
+              {
+                text: '',
+              },
+            ],
+            type: 'upload',
+            value: {
+              id: media.id,
+            },
+            relationTo: 'media',
+          },
+        ],
+      },
+    });
   });
 
   afterAll(async () => {
@@ -40,34 +70,35 @@ describe('_Community Tests', () => {
     await payload.mongoMemoryServer.stop();
   });
 
-  // --__--__--__--__--__--__--__--__--__
-  // You can run tests against the local API or the REST API
-  // use the tests below as a guide
-  // --__--__--__--__--__--__--__--__--__
+  it('populates GraphQL query', async () => {
+    const gql = String.raw;
+    const query = gql`{
+      Posts { docs { mediaUrl } }
+    }`;
 
-  it('local API example', async () => {
-    const newPost = await payload.create({
-      collection: postsSlug,
-      data: {
-        text: 'LOCAL API EXAMPLE',
-      },
-    });
-
-    expect(newPost.text).toEqual('LOCAL API EXAMPLE');
-  });
-
-  it('rest API example', async () => {
-    const newPost = await fetch(`${apiUrl}/${postsSlug}`, {
+    const json = await fetch(`${apiUrl}/graphql?testHook=1`, {
       method: 'POST',
       headers: {
         ...headers,
         Authorization: `JWT ${jwt}`,
       },
-      body: JSON.stringify({
-        text: 'REST API EXAMPLE',
-      }),
+      body: JSON.stringify({ query }),
     }).then((res) => res.json());
 
-    expect(newPost.doc.text).toEqual('REST API EXAMPLE');
+    console.log('GraphQL JSON:', JSON.stringify(json, undefined, 2)); // eslint-disable-line
+    expect(json.data.Posts.docs[0].mediaUrl).not.toBeNull();
+  });
+
+  it('populates REST query', async () => {
+    const json = await fetch(`${apiUrl}/${postsSlug}?testHook=1`, {
+      method: 'GET',
+      headers: {
+        ...headers,
+        Authorization: `JWT ${jwt}`,
+      },
+    }).then((res) => res.json());
+
+    console.log('REST JSON:', JSON.stringify(json, undefined, 2)); // eslint-disable-line
+    expect(json.docs[0].mediaUrl).not.toBeUndefined();
   });
 });
