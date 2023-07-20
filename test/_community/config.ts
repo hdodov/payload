@@ -2,13 +2,13 @@ import { buildConfig } from '../buildConfig';
 import { PostsCollection, postsSlug } from './collections/Posts';
 import { MenuGlobal } from './globals/Menu';
 import { devUser } from '../credentials';
-import { MediaCollection } from './collections/Media';
+import { CategoriesCollection } from './collections/Categories';
 
 export default buildConfig({
   // ...extend config here
   collections: [
+    CategoriesCollection,
     PostsCollection,
-    MediaCollection,
     // ...add more collections here
   ],
   globals: [
@@ -28,10 +28,26 @@ export default buildConfig({
       },
     });
 
+    const childCategory = await payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Child Category',
+      },
+    });
+
+    await payload.create({
+      collection: 'categories',
+      data: {
+        title: 'Parent Category',
+        subcategories: [childCategory.id],
+      },
+    });
+
     await payload.create({
       collection: postsSlug,
       data: {
         text: 'example post',
+        category: childCategory.id,
       },
     });
   },
