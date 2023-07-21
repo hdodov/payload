@@ -40,7 +40,7 @@ export const PostsCollection: CollectionConfig = {
             },
           });
 
-          return parent.docs?.[0];
+          return parent.docs[0]?.id;
         }],
       },
     },
