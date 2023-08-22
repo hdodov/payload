@@ -89,6 +89,8 @@ const useHotkey = (options: {
       const maxEditDepth = Object.keys(modalState).filter((key) => modalState[key]?.isOpen)?.length + 1 ?? 1;
 
       if (maxEditDepth !== editDepth) {
+        console.log('pressedKeys', pressedKeys);
+        console.table({ maxEditDepth, editDepth });
         // We only want to execute the hotkey from the most top-level drawer / edit depth.
         return;
       }
