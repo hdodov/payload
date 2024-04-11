@@ -18,6 +18,10 @@ export default buildConfigWithDefaults({
   graphQL: {
     schemaOutputFile: './test/_community/schema.graphql',
   },
+  localization: {
+    locales: ['en', 'es', 'de'],
+    defaultLocale: 'en',
+  },
 
   onInit: async (payload) => {
     await payload.create({
@@ -31,7 +35,8 @@ export default buildConfigWithDefaults({
     await payload.create({
       collection: postsSlug,
       data: {
-        text: 'example post',
+        text: 'hello',
+        text2: 'world',
       },
     })
   },

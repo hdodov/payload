@@ -9,6 +9,14 @@ export const PostsCollection: CollectionConfig = {
     {
       name: 'text',
       type: 'text',
+      localized: true,
+      required: true,
+    },
+    {
+      name: 'text2',
+      type: 'text',
+      localized: true,
+      required: true,
     },
     {
       name: 'associatedMedia',
