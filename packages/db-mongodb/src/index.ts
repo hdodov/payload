@@ -94,12 +94,15 @@ export type MongooseAdapter = {
   }
   connection: Connection
   globals: GlobalModel
+  initializing: Promise<void>
   mongoMemoryServer: MongoMemoryReplSet
   prodMigrations?: {
     down: (args: MigrateDownArgs) => Promise<void>
     name: string
     up: (args: MigrateUpArgs) => Promise<void>
   }[]
+  rejectInitializing: () => void
+  resolveInitializing: () => void
   sessions: Record<number | string, ClientSession>
   versions: {
     [slug: string]: CollectionModel
@@ -142,6 +145,12 @@ export function mongooseAdapter({
 }: Args): DatabaseAdapterObj {
   function adapter({ payload }: { payload: Payload }) {
     const migrationDir = findMigrationDir(migrationDirArg)
+    let resolveInitializing
+    let rejectInitializing
+    const initializing = new Promise<void>((res, rej) => {
+      resolveInitializing = res
+      rejectInitializing = rej
+    })
     mongoose.set('strictQuery', false)
 
     return createDatabaseAdapter<MongooseAdapter>({
@@ -180,11 +189,14 @@ export function mongooseAdapter({
       findOne,
       findVersions,
       init,
+      initializing,
       migrateFresh,
       migrationDir,
       payload,
       prodMigrations,
       queryDrafts,
+      rejectInitializing,
+      resolveInitializing,
       rollbackTransaction,
       updateGlobal,
       updateGlobalVersion,
